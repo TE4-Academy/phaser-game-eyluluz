@@ -31,6 +31,7 @@ let cursors;         // Piltangent-kontroller
 let score = 0;       // Poäng
 let coinsCollected = 0;  // Antal mynt samlade
 let gameState = 'playing';  // Spelstatus
+let timeLeft = 30; //30 sekunder
 
 // =============================================================================
 // Preload-funktion (fungerar)
@@ -38,12 +39,16 @@ let gameState = 'playing';  // Spelstatus
 function preload() {
     // Vi använder bara färgade former, så inget att ladda
     console.log('Preload: Inga assets att ladda');
+
+
+    this.load.audio('CoinSound', 'CoinSound.mp3');
 }
 
 // =============================================================================
 // Create-funktion (har problem!)
 // =============================================================================
 function create() {
+
     // Skapa spelare (blå fyrkant)
     player = this.add.rectangle(100, 100, 32, 32, 0x0099ff);
     this.physics.add.existing(player);
@@ -57,17 +62,37 @@ function create() {
     // PROBLEM: Bara 2 mynt skapas istället för 5!
     createCoin(this, 200, 150);
     createCoin(this, 400, 300);
-    // createCoin(this, 600, 200);
-    // createCoin(this, 300, 450);
-    // createCoin(this, 700, 400);
+    createCoin(this, 600, 200);
+    createCoin(this, 300, 450);
+    createCoin(this, 700, 400);
 
     // Skapa piltangent-kontroller
     cursors = this.input.keyboard.createCursorKeys();
 
     // PROBLEM: Kollision är inte uppsatt!
-    // this.physics.add.overlap(player, coins, collectCoin, null, this);
+    this.physics.add.overlap(player, coins, collectCoin, null, this);
 
     console.log('Create: Spel skapat, men har problem...');
+
+/* //timer funkar ej
+gameTimer = this.time.addEvent({
+    delay: 1000,
+    callback: updateTimer,
+    callbackScope: this,
+    loop: true
+});
+
+function updateTimer() {
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+    
+    if (timeLeft <= 0) {
+        gameState = 'lost';
+        alert('Tiden är slut!');
+    }
+}
+*/
+    
 }
 
 // =============================================================================
@@ -87,10 +112,11 @@ function update() {
     handlePlayerMovement();
 
     // PROBLEM: Debug uppdateras inte!
-    // updateDebug();
+     updateDebug();
 
     // PROBLEM: Win-condition saknas!
-    // checkWinCondition();
+     checkWinCondition();
+     
 }
 
 // =============================================================================
@@ -119,41 +145,44 @@ function handlePlayerMovement() {
 // Kollisions-hantering (saknas!)
 // =============================================================================
 // TODO: Skriv denna funktion
-// function collectCoin(player, coin) {
-//     // Ta bort myntet
-//     coin.destroy();
-//     
-//     // Öka poäng
-//     score += 10;
-//     coinsCollected++;
-//     
-//     // Uppdatera UI
-//     updateScore();
-//     
-//     console.log('Mynt samlat! Poäng:', score);
-// }
+function collectCoin(player, coin) {
+    // Ta bort myntet
+    coin.destroy();
+
+    // Öka poäng
+    score += 10;
+    coinsCollected++;
+
+    // Uppdatera UI
+    updateScore();
+    this.sound.play('CoinSound');
+
+     console.log('Mynt samlat! Poäng:', score);
+
+     
+} 
 
 // =============================================================================
 // UI-uppdatering (saknas!)
 // =============================================================================
 // TODO: Skriv denna funktion
-// function updateScore() {
-//     document.getElementById('score').textContent = score;
-//     document.getElementById('coins-left').textContent = (5 - coinsCollected);
-// }
+function updateScore() {
+    document.getElementById('score').textContent = score;
+    document.getElementById('coins-left').textContent = (5 - coinsCollected);
+}
 
 // =============================================================================
 // Win-condition (saknas!)
 // =============================================================================
 // TODO: Skriv denna funktion
-// function checkWinCondition() {
-//     if (coinsCollected >= 5 && gameState === 'playing') {
-//         gameState = 'won';
-//         console.log('Du vann!');
+ function checkWinCondition() {
+     if (coinsCollected >= 5 && gameState === 'playing') {
+         gameState = 'won';
+         console.log('Du vann!');
 //         // Visa win-meddelande
-//         // alert('Grattis! Du samlade alla mynt!');
-//     }
-// }
+          alert('Grattis! Du samlade alla mynt!');
+     }
+ }
 
 // =============================================================================
 // Debug-funktion (fungerar delvis)

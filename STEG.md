@@ -240,6 +240,7 @@ function updateTimer() {
 }
 ```
 
+
 ### Ljud-effekter
 Lägg till ljud när mynt samlas:
 ```javascript
